@@ -35,7 +35,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
 
   const Logo = () => (
-    <Link href="/dashboard" className="flex items-center gap-2 p-2">
+    <Link href="/" className="flex items-center gap-2 p-2">
       <ShieldCheck className="text-primary h-8 w-8" />
       <h1 className="text-lg font-bold text-primary-foreground group-data-[collapsible=icon]:hidden">
         AI Proctor Sentinel
