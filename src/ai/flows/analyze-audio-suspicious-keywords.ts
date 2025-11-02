@@ -23,8 +23,8 @@ export type AnalyzeAudioInput = z.infer<typeof AnalyzeAudioInputSchema>;
 const AnalyzeAudioOutputSchema = z.object({
   isSuspicious: z.boolean().describe('Whether suspicious keywords or multiple voices are detected.'),
   suspiciousKeywords: z.array(z.string()).describe('List of suspicious keywords detected.'),
-  multipleVoicesDetected: z.boolean().describe('Whether multiple voices are detected.'),
-  analysisDetails: z.string().describe('Detailed analysis of the audio, if any.'),
+  multipleVoicesDetected: z.boolean().describe('Whether multiple distinct voices are detected.'),
+  analysisDetails: z.string().describe('Detailed analysis of the audio, providing a summary of findings.'),
 });
 export type AnalyzeAudioOutput = z.infer<typeof AnalyzeAudioOutputSchema>;
 
@@ -38,14 +38,15 @@ const analyzeAudioPrompt = ai.definePrompt({
   name: 'analyzeAudioPrompt',
   input: {schema: AnalyzeAudioInputSchema},
   output: {schema: AnalyzeAudioOutputSchema},
-  prompt: `You are an AI proctor analyzing audio for suspicious activity during an exam.
+  prompt: `You are an AI proctor with expertise in audio analysis for online exams. Your task is to analyze an audio recording for any signs of cheating.
 
-  Analyze the provided audio recording and determine if there are any suspicious keywords (like "Google", "Siri", "help me") or if multiple distinct voices are present.
+  Analyze the provided audio recording and determine if there are any suspicious keywords (e.g., "Hey Siri", "OK Google", "help me", "what's the answer") or if you can distinguish more than one unique voice.
 
-  - If suspicious keywords are found OR multiple voices are detected, set isSuspicious to true.
-  - List any suspicious keywords found.
-  - Explicitly state if multiple voices were detected.
-  - Provide a brief analysis summary.
+  Your response must be in the specified JSON format with the following logic:
+  - If you find any suspicious keywords OR if you detect multiple voices, you MUST set 'isSuspicious' to true. Otherwise, set it to false.
+  - Populate 'suspiciousKeywords' with any keywords you've identified. If none, provide an empty array.
+  - Set 'multipleVoicesDetected' to true if you are confident more than one person is speaking, otherwise false.
+  - Provide a concise summary of your findings in 'analysisDetails', explaining why the audio is or is not suspicious.
 
   Audio Recording: {{media url=audioDataUri}}
   `,

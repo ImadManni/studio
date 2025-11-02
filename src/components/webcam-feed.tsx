@@ -3,7 +3,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
-import { Camera, AlertTriangle, Phone, Users, EyeOff } from 'lucide-react';
+import { Camera, AlertTriangle, Phone, Users, EyeOff, Move } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { useToast } from '@/hooks/use-toast';
@@ -16,8 +16,9 @@ type DetectionState =
   | 'face_ok'
   | 'no_face'
   | 'multi_face'
-  | 'phone_detected'
-  | 'looking_away';
+  | 'object_detected'
+  | 'looking_away'
+  | 'excessive_movement';
 
 const detectionConfig: Record<
   DetectionState,
@@ -27,7 +28,7 @@ const detectionConfig: Record<
     message: 'Initializing Camera...',
     icon: <Camera className="h-4 w-4" />,
     color: 'bg-blue-500/20 text-blue-400',
-    borderColor: 'border-blue-500',
+    borderColor: 'border-blue-500/50',
   },
   no_camera_permission: {
     message: 'Webcam permission denied',
@@ -48,7 +49,7 @@ const detectionConfig: Record<
     borderColor: 'border-green-500',
   },
   no_face: {
-    message: 'No Face Detected',
+    message: 'Candidate Not Detected',
     icon: <AlertTriangle className="h-4 w-4" />,
     color: 'bg-red-500/20 text-red-400',
     borderColor: 'border-red-500',
@@ -59,27 +60,34 @@ const detectionConfig: Record<
     color: 'bg-red-500/20 text-red-400',
     borderColor: 'border-red-500',
   },
-  phone_detected: {
-    message: 'Phone Detected',
+  object_detected: {
+    message: 'Unauthorized Object Detected',
     icon: <Phone className="h-4 w-4" />,
     color: 'bg-orange-500/20 text-orange-400',
     borderColor: 'border-orange-500',
   },
   looking_away: {
-    message: 'Looking Away From Screen',
+    message: 'Gaze Not on Screen',
     icon: <EyeOff className="h-4 w-4" />,
     color: 'bg-yellow-500/20 text-yellow-400',
     borderColor: 'border-yellow-500',
   },
+  excessive_movement: {
+    message: 'Excessive Movement',
+    icon: <Move className="h-4 w-4" />,
+    color: 'bg-yellow-500/20 text-yellow-400',
+    borderColor: 'border-yellow-500',
+  }
 };
 
 const SIMULATED_EVENTS: DetectionState[] = [
   'face_ok',
   'face_ok',
-  'face_ok',
   'looking_away',
   'face_ok',
-  'phone_detected',
+  'excessive_movement',
+  'face_ok',
+  'object_detected',
   'face_ok',
   'no_face',
   'face_ok',
@@ -135,8 +143,18 @@ export function WebcamFeed() {
       // Simulate events
       eventInterval = setInterval(() => {
         eventIndex = (eventIndex + 1) % SIMULATED_EVENTS.length;
-        setDetectionState(SIMULATED_EVENTS[eventIndex]);
-      }, 7000);
+        const newState = SIMULATED_EVENTS[eventIndex];
+        setDetectionState(newState);
+
+        if (newState !== 'face_ok' && newState !== 'initializing') {
+            toast({
+                variant: 'destructive',
+                title: 'Suspicious Behavior Detected',
+                description: detectionConfig[newState].message
+            })
+        }
+
+      }, 5000); // Faster event simulation
     }
 
     return () => {
@@ -148,7 +166,7 @@ export function WebcamFeed() {
         stream.getTracks().forEach((track) => track.stop());
       }
     };
-  }, [hasCameraPermission]);
+  }, [hasCameraPermission, toast]);
 
   const config = detectionConfig[detectionState];
 
