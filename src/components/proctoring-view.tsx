@@ -1,3 +1,5 @@
+'use client';
+
 import { getCandidateById, getAlertsByCandidateId } from '@/lib/data';
 import type { Candidate, Alert } from '@/lib/types';
 import { notFound } from 'next/navigation';
