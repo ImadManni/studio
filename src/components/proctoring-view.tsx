@@ -3,7 +3,7 @@ import type { Candidate, Alert } from '@/lib/types';
 import { notFound } from 'next/navigation';
 import { WebcamFeed } from './webcam-feed';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from './ui/card';
-import { BarChart, Clock, Eye, Mic, Phone, ShieldAlert, Users } from 'lucide-react';
+import { BarChart as BarChartIcon, Clock, Eye, Mic, Phone, ShieldAlert, Users } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { ScrollArea } from './ui/scroll-area';
 import Image from 'next/image';
@@ -13,11 +13,8 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  Bar,
-  XAxis,
-  YAxis,
-  BarChart as RechartsBarChart,
 } from '@/components/ui/chart';
+import { Bar, BarChart, XAxis, YAxis } from 'recharts';
 
 interface ProctoringViewProps {
   candidateId: string;
@@ -130,11 +127,14 @@ export function ProctoringView({ candidateId }: ProctoringViewProps) {
         <AudioAnalyzer />
         <Card>
             <CardHeader>
-                <CardTitle className="text-lg">Behavioral Statistics</CardTitle>
+                <CardTitle className="text-lg flex items-center">
+                  <BarChartIcon className="mr-2 h-5 w-5" />
+                  Behavioral Statistics
+                </CardTitle>
             </CardHeader>
             <CardContent>
                 <ChartContainer config={chartConfig} className="w-full h-[200px]">
-                    <RechartsBarChart
+                    <BarChart
                         data={chartData}
                         layout="vertical"
                         margin={{ left: 10, right: 10 }}
@@ -146,14 +146,14 @@ export function ProctoringView({ candidateId }: ProctoringViewProps) {
                             tickLine={false}
                             axisLine={false}
                             tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
-                            className="w-[100px]"
+                            width={100}
                         />
                         <ChartTooltip
                             cursor={false}
                             content={<ChartTooltipContent indicator="line" />}
                         />
                         <Bar dataKey="value" radius={5} />
-                    </RechartsBarChart>
+                    </BarChart>
                 </ChartContainer>
             </CardContent>
         </Card>
