@@ -13,6 +13,8 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import type { CandidateStatus } from '@/lib/types';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
 
 const statusColors: Record<CandidateStatus, string> = {
   Clear: 'bg-green-500/20 text-green-400 border-green-500/30',
@@ -35,39 +37,46 @@ export default function DashboardPage() {
                 <TableHead>Name</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="text-right">Suspicion Score</TableHead>
+                <TableHead>Suspicion Score</TableHead>
+                <TableHead className="text-right">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {candidates.map((candidate) => (
-                <TableRow key={candidate.id} asChild>
-                  <Link href={`/dashboard/candidate/${candidate.id}`} className="cursor-pointer">
-                    <TableCell>
-                      <Avatar>
-                        <AvatarImage src={candidate.avatarUrl} alt={candidate.name} data-ai-hint="person portrait" />
-                        <AvatarFallback>
-                          {candidate.name
-                            .split(' ')
-                            .map((n) => n[0])
-                            .join('')}
-                        </AvatarFallback>
-                      </Avatar>
-                    </TableCell>
-                    <TableCell>
-                      <div className="font-medium">{candidate.name}</div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="text-muted-foreground">{candidate.email}</div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={cn("whitespace-nowrap", statusColors[candidate.status])}>
-                        {candidate.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {candidate.suspicionScore}%
-                    </TableCell>
-                  </Link>
+                <TableRow key={candidate.id}>
+                  <TableCell>
+                    <Avatar>
+                      <AvatarImage src={candidate.avatarUrl} alt={candidate.name} data-ai-hint="person portrait" />
+                      <AvatarFallback>
+                        {candidate.name
+                          .split(' ')
+                          .map((n) => n[0])
+                          .join('')}
+                      </AvatarFallback>
+                    </Avatar>
+                  </TableCell>
+                  <TableCell>
+                    <div className="font-medium">{candidate.name}</div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="text-muted-foreground">{candidate.email}</div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className={cn("whitespace-nowrap", statusColors[candidate.status])}>
+                      {candidate.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="font-medium">{candidate.suspicionScore}%</div>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button asChild variant="ghost" size="sm">
+                        <Link href={`/dashboard/candidate/${candidate.id}`}>
+                            View
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                        </Link>
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
