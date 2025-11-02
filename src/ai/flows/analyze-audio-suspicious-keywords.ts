@@ -21,7 +21,7 @@ const AnalyzeAudioInputSchema = z.object({
 export type AnalyzeAudioInput = z.infer<typeof AnalyzeAudioInputSchema>;
 
 const AnalyzeAudioOutputSchema = z.object({
-  isSuspicious: z.boolean().describe('Whether suspicious keywords/voices are detected.'),
+  isSuspicious: z.boolean().describe('Whether suspicious keywords or multiple voices are detected.'),
   suspiciousKeywords: z.array(z.string()).describe('List of suspicious keywords detected.'),
   multipleVoicesDetected: z.boolean().describe('Whether multiple voices are detected.'),
   analysisDetails: z.string().describe('Detailed analysis of the audio, if any.'),
@@ -40,17 +40,15 @@ const analyzeAudioPrompt = ai.definePrompt({
   output: {schema: AnalyzeAudioOutputSchema},
   prompt: `You are an AI proctor analyzing audio for suspicious activity during an exam.
 
-  Analyze the provided audio recording and determine if there are any suspicious keywords or multiple voices present.
+  Analyze the provided audio recording and determine if there are any suspicious keywords (like "Google", "Siri", "help me") or if multiple distinct voices are present.
+
+  - If suspicious keywords are found OR multiple voices are detected, set isSuspicious to true.
+  - List any suspicious keywords found.
+  - Explicitly state if multiple voices were detected.
+  - Provide a brief analysis summary.
 
   Audio Recording: {{media url=audioDataUri}}
-
-  Output your analysis in JSON format:
-  {
-    "isSuspicious": true/false, // true if suspicious activity is detected, false otherwise
-    "suspiciousKeywords": ["keyword1", "keyword2"], // list of suspicious keywords detected, empty array if none
-    "multipleVoicesDetected": true/false, // true if multiple voices are detected, false otherwise
-    "analysisDetails": "Detailed explanation of the analysis." // any additional details regarding the analysis
-  }`,
+  `,
 });
 
 const analyzeAudioFlow = ai.defineFlow(
