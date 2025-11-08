@@ -21,6 +21,7 @@ import {
   Settings,
   LogOut,
   Download,
+  Bot,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -34,6 +35,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from './ui/button';
+import { AIAssistant } from './ai-assistant';
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -64,6 +66,18 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 <Link href="/dashboard">
                   <LayoutDashboard />
                   <span>Dashboard</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname === '/dashboard/ai-test'}
+                tooltip="AI Assistant Test"
+              >
+                <Link href="/dashboard/ai-test">
+                  <Bot />
+                  <span>AI Assistant Test</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -156,6 +170,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           </DropdownMenu>
         </header>
         <main className="flex-1 p-4 md:p-6">{children}</main>
+        <AIAssistant />
       </SidebarInset>
     </SidebarProvider>
   );

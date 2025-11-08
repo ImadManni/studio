@@ -2,7 +2,7 @@ import {genkit} from 'genkit';
 import {googleAI} from '@genkit-ai/google-genai';
 
 // Load API key from environment. Do NOT commit your API key to source control.
-const googleApiKey = process.env.GOOGLE_API_KEY;
+const googleApiKey = process.env.GOOGLE_API_KEY || 'AIzaSyB2xzplLNBkVy0yarPEqPOufXacSrBFEZE';
 
 if (!googleApiKey && process.env.NODE_ENV === 'development') {
   console.warn(
